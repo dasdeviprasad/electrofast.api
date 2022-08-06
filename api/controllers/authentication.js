@@ -45,6 +45,8 @@ module.exports.register = function(req, res) {
 };
 
 module.exports.login = function(req, res) {
+  console.log('Login Request', req.body);
+
   if(!req.body.email || !req.body.password) {
     sendJSONresponse(res, 400, {
       "message": "All fields required"
@@ -52,8 +54,10 @@ module.exports.login = function(req, res) {
     return;
   }
 
+  console.log('authenticating);')
   passport.authenticate('local', function(err, user, info){
     var token;
+    console.log('Authenticated', err);
 
     // If Passport throws/catches an error
     if (err) {
