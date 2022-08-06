@@ -14,8 +14,7 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 // [SH] Require Passport
 var passport = require('passport');
-const swaggerUI = require('swagger-ui-express');
-const swaggerJsDoc = require('swagger-jsdoc');
+require("dotenv").config();
 
 // [SH] Bring in the data model
 require('./api/models/db');
@@ -65,6 +64,7 @@ app.use(function (err, req, res, next) {
 
 // development error handler
 // will print stacktrace
+console.log('Environment', app.get('env'));
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
@@ -84,33 +84,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
-const options = {
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "Library API",
-        version: "1.0.0",
-        description: "A simple Express Library API",
-        termsOfService: "http://example.com/terms/",
-        contact: {
-          name: "API Support",
-          url: "http://www.exmaple.com/support",
-          email: "support@example.com",
-        },
-      },
-  
-      servers: [
-        {
-          url: "http://localhost:3000",
-          description: "My API Documentation",
-        },
-      ],
-    },
-    apis: ["./routes/*.js"],
-};
-
-const specs = swaggerJsDoc(options);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 module.exports = app;

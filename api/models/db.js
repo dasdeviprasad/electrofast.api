@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
 var gracefulShutdown;
-//var dbURI = 'mongodb://localhost/meanAuth';
-var dbURI = 'mongodb://admin:password@localhost:27017/electrofast?authSource=admin';
+
+console.log('Mongo Url', process.env.DB_URL);
+var dbURI = process.env.DB_URL || 'mongodb://admin:password@localhost:27017/electrofast?authSource=admin';
 if (process.env.NODE_ENV === 'production') {
-  //dbURI = process.env.MONGOLAB_URI;
+  dbURI = process.env.DB_URL;
 }
 
 mongoose.connect(dbURI);
