@@ -11,14 +11,11 @@ router.post('/login', (req, res) => {
   console.log('Login Request', req.body);
 
   if(!req.body.email || !req.body.password) {
-    return sendJSONresponse(res, 400, {
+    sendJSONresponse(res, 400, {
       "message": "All fields required"
     });
+    return;
   }
-
-  return sendJSONresponse(res, 400, {
-    "message": "All fields required"
-  });
 
   console.log('authenticating);')
   passport.authenticate('local', function(err, user, info){
