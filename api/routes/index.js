@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
-var userModel = require('../models/users');
 
 var ctrlAuth = require('../controllers/authentication');
+var ctrlInv = require('../controllers/catalog');
 
 // authentication
 router.post('/register', ctrlAuth.register);
@@ -42,8 +42,11 @@ router.post('/login', (req, res) => {
   })(req, res);
 });
 
+router.get('/product', ctrlInv.find);
+router.get('/product/import', ctrlInv.import);
+
 router.get('/', (req, res) => {
   res.send('hello world!')
-})
+});
 
 module.exports = router;
