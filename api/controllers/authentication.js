@@ -1,5 +1,6 @@
 var passport = require('passport');
 var model = require('../models/users');
+const loginValidator = require('../validations/login');
 
 var sendJSONresponse = function (res, status, content) {
   res.status(status);
@@ -53,43 +54,33 @@ module.exports.register = function (req, res) {
 };
 
 module.exports.login = function (req, res) {
-  console.log('Login Request', req.body);
-
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return sendJSONresponse(res, 400, {
-      "message": "All fields required"
-    });
+  const { error } = loginValidator.validate(req.body);
+  
+  if(error){
+    console.log(error);
+    return res.status(400).send(error.message);
   }
 
-  console.log('Authenticating...')
   passport.authenticate('local', function (err, user, info) {
-    var token;
-    console.log('Authenticated', err);
-
-    // If Passport throws/catches an error
-    if (err) {
-      res.status(404).json(err);
-      return;
+    if (err) { // If Passport throws/catches an error
+      return res.status(404).json(err);
     }
 
-    // If a user is found
-    if (user) {
-      token = user.generateJwt();
-      res.status(200);
-      res.json({
+    if (!user) {
+      return res.status(401).json(info); // When user is not found or password is not matched.
+    } else {
+      const token = user.generateJwt();
+      return res.status(200).json({
         "token": token
       });
-    } else {
-      // If user is not found
-      res.status(401).json(info);
     }
   })(req, res);
 };
 
-module.exports.changePassoword = function (req, res) {
-  const { email, oldPassword, newPassword } = req.body;
-  if (!email || !oldPassword || !newPassword) {
+
+module.exports.addAddress = function (req, res) {
+  const { email, address } = req.body;
+  if (!email || !address) {
     sendJSONresponse(res, 400, {
       "message": "All fields required"
     });
@@ -107,61 +98,18 @@ module.exports.changePassoword = function (req, res) {
           "message": "User not found"
         });
       }
-      // Return if password is wrong
-      if (!user.validPassword(oldPassword) {
-        return sendJSONresponse(res, 500, {
-          "message": "Password is wrong!"
-        });
-      }
 
-      user.setPassword(newPassword);
+      user.addresses.push(address);
       user.save(function (err, data) {
         if (err) {
           console.error(err);
           return sendJSONresponse(res, 500, {
-            "message": "Unable to change password"
+            "message": "Unable to add address"
           });
         }
 
         res.status(200);
-        res.json(user);
-      });
-    });
-  }
-  catch (err) { console.log(err); }
-};
-
-module.exports.resetPassoword = function (req, res) {
-  const { email } = req.body
-  if (!email) {
-    sendJSONresponse(res, 400, {
-      "message": "All fields required"
-    });
-    return;
-  }
-
-  try {
-    model.userModel.findOne({ email: req.body.email }, function (err, user) {
-      if (err) { return done(err); }
-
-      // Return if user not found in database
-      if (!user) {
-        return sendJSONresponse(res, 404, {
-          "message": "User not found"
-        });
-      }
-
-      user.setPassword('1234');
-      user.save(function (err, data) {
-        if (err) {
-          console.error(err);
-          return sendJSONresponse(res, 500, {
-            "message": "Unable to reset password"
-          });
-        }
-
-        res.status(200);
-        res.json(user);
+        res.json(data);
       });
     });
   }

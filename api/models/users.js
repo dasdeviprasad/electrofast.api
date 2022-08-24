@@ -1,6 +1,7 @@
 var mongoose = require( 'mongoose' );
 var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_CODE || 'MY_SECRET';
 
 const addressSchema = mongoose.Schema({
   address1: String,
@@ -57,7 +58,7 @@ userSchema.methods.generateJwt = function() {
     customerid: this.customerid,
     addresses: this.addresses,
     exp: parseInt(expiry.getTime() / 1000),
-  }, "MY_SECRET"); // DO NOT KEEP YOUR SECRET IN THE CODE!
+  }, JWT_SECRET); // DO NOT KEEP YOUR SECRET IN THE CODE!
 };
 
 var userModel = mongoose.model('User', userSchema);
