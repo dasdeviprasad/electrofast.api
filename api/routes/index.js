@@ -7,40 +7,9 @@ var ctrlInv = require('../controllers/catalog');
 
 // authentication
 router.post('/register', ctrlAuth.register);
-router.post('/login', (req, res) => {
-  console.log('Login Request', req.body);
-
-  if(!req.body.email || !req.body.password) {
-    sendJSONresponse(res, 400, {
-      "message": "All fields required"
-    });
-    return;
-  }
-
-  console.log('authenticating);')
-  passport.authenticate('local', function(err, user, info){
-    var token;
-    console.log('Authenticated', err);
-
-    // If Passport throws/catches an error
-    if (err) {
-      res.status(404).json(err);
-      return;
-    }
-
-    // If a user is found
-    if(user){
-      token = user.generateJwt();
-      res.status(200);
-      res.json({
-        "token" : token
-      });
-    } else {
-      // If user is not found
-      res.status(401).json(info);
-    }
-  })(req, res);
-});
+router.post('/login', ctrlAuth.login);
+router.post('/password/change', ctrlAuth.changePassoword);
+router.post('/password/reset', ctrlAuth.resetPassword);
 
 router.get('/product', ctrlInv.find);
 router.get('/product/import', ctrlInv.import);
