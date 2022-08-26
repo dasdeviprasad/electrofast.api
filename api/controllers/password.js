@@ -1,5 +1,5 @@
 var model = require('../models/users');
-const changePwdValidator = required('../validations/changePassword');
+const changePwdValidator = require('../validations/changePassword');
 
 module.exports.change = function (req, res) {
   const { error } = loginValidator.validate(req.body);
