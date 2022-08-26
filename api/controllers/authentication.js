@@ -61,6 +61,7 @@ module.exports.login = function (req, res) {
     return res.status(400).send(error.message);
   }
 
+  console.log('validating user');
   passport.authenticate('local', function (err, user, info) {
     if (err) { // If Passport throws/catches an error
       return res.status(404).json(err);
